@@ -1,0 +1,27 @@
+FROM alpine:latest as smartdns-builder
+
+ARG SMARTDNS=Release36.1
+
+RUN apk update && \
+    apk add --no-cache git dpkg make gcc build-base linux-headers openssl-dev openssl-libs-static && \
+    git clone -b $SMARTDNS https://github.com/pymumu/smartdns /smartdns && \
+    cd /smartdns && \
+    sh ./package/build-pkg.sh --platform linux --arch `dpkg --print-architecture` --static && \
+    mkdir /release -p && \
+    cd /smartdns/package && tar xf *.tar.gz && \
+    cp /smartdns/package/smartdns/etc /release/ -a && \
+    cp /smartdns/package/smartdns/usr /release/ -a && \
+    strip /release/usr/sbin/smartdns
+
+FROM alpine:latest
+
+COPY --from=smartdns-builder /release/ /release/
+
+RUN ln -sf /release/etc/smartdns /etc/smartdns && \
+    ln -sf /release/etc/default /etc/default && \
+    ln -sf /release/usr/sbin/smartdns /usr/sbin/smartdns
+
+EXPOSE 53/udp
+VOLUME "/etc/smartdns/"
+
+CMD ["/usr/sbin/smartdns", "-f", "-x"]
