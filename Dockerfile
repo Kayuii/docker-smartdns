@@ -64,7 +64,7 @@ RUN apk update && \
 FROM base
 
 COPY --from=smartdns-builder /smartdns/package/*.tar.gz /opt/
-COPY --from=webproc /go/webproc/webproc /usr/local/bin/webproc
+COPY --from=webproc /go/webproc/webproc /usr/sbin/webproc
 COPY docker-entrypoint.sh /entrypoint.sh
 
 RUN tar -xvf /opt/*.tar.gz && \
@@ -78,40 +78,6 @@ RUN tar -xvf /opt/*.tar.gz && \
 EXPOSE 53/udp
 VOLUME "/etc/smartdns/"
 
-# ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 
-# CMD ["smartdns"]
-
-# FROM ubuntu:latest as smartdns-builder
-
-# COPY . /smartdns/
-# RUN apt-get update && \
-#     apt-get install -y make gcc libssl-dev && \
-#     cd smartdns && \
-#     sh ./package/build-pkg.sh --platform debian --arch `dpkg --print-architecture`
-
-# # #configure dnsmasq
-# # RUN mkdir -p /etc/default/
-# # RUN echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq
-# # COPY dnsmasq.conf /etc/dnsmasq.conf
-# # #run!
-# # ENTRYPOINT ["webproc","--config","/etc/dnsmasq.conf","--","dnsmasq","--no-daemon"]
-
-# FROM ubuntu:latest
-# COPY --from=smartdns-builder /smartdns/package/*.deb /opt/
-# COPY --from=webproc /usr/local/bin/webproc /usr/local/bin/webproc
-# COPY docker-entrypoint.sh /entrypoint.sh
-# RUN dpkg -i /opt/*.deb && \
-#     rm /opt/*.deb -fr
-# RUN apt-get update \
-#   && apt-get install -y libssl1.1 \
-#   && apt autoremove \
-#   && apt autoclean \
-#   && rm -rf /tmp/*
-
-# EXPOSE 53/udp
-# VOLUME "/etc/smartdns/"
-
-# ENTRYPOINT ["/entrypoint.sh"]
-
-# CMD ["smartdns"]
+CMD ["smartdns"]
