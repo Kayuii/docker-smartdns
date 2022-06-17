@@ -1,0 +1,18 @@
+language: ruby
+
+branches:
+  only:
+  - main
+
+services:
+- docker
+
+os: linux
+
+dist: bionic
+
+script:
+  - docker buildx version
+  - docker buildx create --platform linux/amd64,linux/arm64,linux/arm --use
+  - docker buildx ls
+  - docker buildx inspect --bootstrap
