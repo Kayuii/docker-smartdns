@@ -16,6 +16,38 @@ docker run --rm -it -p 8080:8080 -p 1053:53/udp -v ./config.conf:/etc/smartdns/s
 docker run --rm -it -p 8080:8080 -p 1053:53/udp -v ./config.conf:/etc/smartdns/smartdns.conf  kayuii/smartdns smartdns -f -x -c /etc/smartdns/smartdns.conf
 ```
 
+dns测试
+```
+$ dig google.com -p 1053 @127.0.0.1
+; <<>> DiG 9.16.1-Ubuntu <<>> google.com -p 1053 @127.0.0.1
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 36275
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;google.com.			IN	A
+
+;; ANSWER SECTION:
+google.com.		293	IN	A	142.250.66.142
+
+;; Query time: 100 msec
+;; SERVER: 127.0.0.1#1053(127.0.0.1)
+;; WHEN: 二 6月 21 12:37:57 CST 2022
+;; MSG SIZE  rcvd: 55
+
+$ nslookup -port=1053 google.com 127.0.0.1
+Server:		127.0.0.1
+Address:	127.0.0.1#1053
+
+Non-authoritative answer:
+Name:	google.com
+Address: 93.46.8.90
+
+```
+
 项目地址：https://github.com/kayuii/docker-smartdns
 
 介绍
