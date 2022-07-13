@@ -16,7 +16,8 @@ steps:
   image: kayuii/github-checker
   commands:
   - URL=$(cat .version | github-checker pymumu/smartdns)
-  - REQ=$(echo "$URL" | grep "Is latest")
+  - REQ=$(echo "$URL" | grep "Is latest" | tail -1)
+  - echo "$REQ"
   - |
     if [ -z "$REQ"]; then
       github-checker pymumu/smartdns | tee .version
@@ -36,7 +37,7 @@ steps:
       exit
     fi
   - git fetch --tags
-  - CUR_VERSION=$(cat .version | awk '{gsub(/\(|\)/,"");printf $2')
+  - CUR_VERSION=$(cat .version | awk '{printf $2}')
   - mkdir -p "/root/.ssh"
   - chmod 0700 /root/.ssh/
   - ssh-keyscan github.com > /root/.ssh/known_hosts
@@ -104,6 +105,7 @@ steps:
   when:
     ref:
     - refs/tags/Release**
+
 
 
 
